@@ -20,6 +20,7 @@ export default Ember.Component.extend({
     this._super();
     this.set('anon', (Discourse.User.current() == null));
     this.set('settings', getRegister(this).lookup('site-settings:main'));
+    this.set('create_accounts', this.get('settings').discourse_donations_enable_create_accounts);
     this.set('stripe', Stripe(this.get('settings').discourse_donations_public_key));
   },
 
@@ -53,7 +54,10 @@ export default Ember.Component.extend({
           let params = {
             stripeToken: data.token.id,
             amount: self.get('amount') * 100,
-            email: self.get('email')
+            email: self.get('email'),
+            username: self.get('username'),
+            name: self.get('name'),
+            password: self.get('password')
           };
 
           ajax('/charges', { data: params, method: 'post' }).then(data => {
